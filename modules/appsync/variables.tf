@@ -19,7 +19,7 @@ variable "table_names" {
   description = "The DynamoDB table names"
 }
 
-variable "table_arns" {
-  type    = list(string)
-  description = "The DynamoDB table ARNs"
+variable "role_arn" {
+  type    = string
+  description = "The DynamoDB Access Role ARN"
 }
