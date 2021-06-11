@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "dynamodb_table" {
-  for_each        = var.table_names
+  for_each        = toset(var.table_names)
   name            = each.key
   billing_mode    = "PAY_PER_REQUEST"
   hash_key        = "id"

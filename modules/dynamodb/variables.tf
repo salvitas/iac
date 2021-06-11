@@ -1,5 +1,5 @@
 variable "table_names" {
-  type = set(string)
+  type = list(string)
   description = "The DynamoDB table names"
 }
 

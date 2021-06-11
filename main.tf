@@ -33,7 +33,7 @@ module "cognito" {
 }
 
 module "dynamodb" {
-  table_names       = toset(["customers_${terraform.workspace}", "accounts_${terraform.workspace}", "transactions_${terraform.workspace}", "favourite_accounts_${terraform.workspace}", "signatures_${terraform.workspace}"])
+  table_names       = ["customers_${terraform.workspace}", "accounts_${terraform.workspace}", "transactions_${terraform.workspace}", "favourite_accounts_${terraform.workspace}", "signatures_${terraform.workspace}"]
   source            = "./modules/dynamodb"
   region            = var.region
 //  TODO check how to dynamically include secondary indexes
@@ -47,14 +47,4 @@ module "appsync" {
   table_arns        = module.dynamodb.dynamodb_arns
 }
 
-//resource "aws_appsync_datasource" "appsync_dynamodb_ds" {
-//  for_each          = toset(["customers_${terraform.workspace}", "accounts_${terraform.workspace}", "transactions_${terraform.workspace}", "favourite_accounts_${terraform.workspace}", "signatures_${terraform.workspace}"])
-//  api_id            = module.appsync.appsync_id
-//  name              = "${module.dynamodb.dynamodb_id[index(["customers", "accounts", "transactions", "favourite_accounts", "signatures"], each.key)]}_${terraform.workspace}"
-//  service_role_arn  = module.dynamodb.dynamodb_arn[index(["customers", "accounts", "transactions", "favourite_accounts", "signatures"], each.key)]
-//  type              = "AMAZON_DYNAMODB"
-//
-//  dynamodb_config {
-//    table_name      = module.dynamodb.dynamodb_id[index(["customers", "accounts", "transactions", "favourite_accounts", "signatures"], each.key)]
-//  }
-//}
+//TODO move tables into a locals var.
