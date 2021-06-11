@@ -1,0 +1,12 @@
+[{
+"id": {"S": "8a8587f078a87fcd0178af54cc572d2c"},
+"externalId": {"S": "475142622"},
+"dob": {"S": "1970-08-30"},
+"first_name": {"S": "Salva"},
+"last_name": {"S": "Vilarrasa"},
+"signature": {"S": "123456"},
+"mobile_phone_number": {"S": "+6585565635"},
+"gender": {"S": "Male"},
+"email_address": {"S": "salvador.vilarrasa@gft.com"},
+"title": {"S": "Mr"}
+}]

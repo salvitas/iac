@@ -1,0 +1,60 @@
+[
+  {
+    "account_id": {
+      "S": "8a8587f078a87fcd0178af98922f2d2f"
+    },
+    "account_number": {
+      "S": "ES7921000813610123456789"
+    },
+    "alias": {
+      "S": "Starbucks Account"
+    },
+    "bank_id_code": {
+      "S": ""
+    },
+    "bank_id": {
+      "S": ""
+    },
+    "customer_id": {
+      "S": "8a8587f078a87fcd0178af54cc572d2c"
+    },
+    "id": {
+      "S": "SNTR597"
+    },
+    "stakeholder": {
+      "S": "Claudio Heidel"
+    },
+    "currency": {
+      "S": "EUR"
+    }
+  },
+  {
+    "account_id": {
+      "S": "8a8587f078a87fcd0178af98922f2d31"
+    },
+    "account_number": {
+      "S": "9102031012"
+    },
+    "alias": {
+      "S": "SGD Account"
+    },
+    "bank_id_code": {
+      "S": ""
+    },
+    "bank_id": {
+      "S": ""
+    },
+    "customer_id": {
+      "S": "8a8587f078a87fcd0178af54cc572d2c"
+    },
+    "id": {
+      "S": "JAET180"
+    },
+    "stakeholder": {
+      "S": "Claudio Heidel"
+    },
+    "currency": {
+      "S": "SGD"
+    }
+  }
+]

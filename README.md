@@ -23,5 +23,5 @@ terraform workspace list
 ## Usage
 terraform init
 terraform plan -var-file dev.tfvars
-terraform apply -var-file dev.tfvars
-terraform destroy
+terraform apply -var-file dev.tfvars -auto-approve
+terraform destroy -var-file dev.tfvars -auto-approve
