@@ -18,71 +18,59 @@ terraform {
   }
 }
 
-resource "aws_s3_bucket" "bucket" {
-  bucket = "${var.bucket_name}-${terraform.workspace}"
-  acl = "private"
+locals {
+  appsync_dynamodb_datasources = [
+    "customers_${terraform.workspace}",
+    "accounts_${terraform.workspace}",
+    "transactions_${terraform.workspace}",
+    "favourite_accounts_${terraform.workspace}"
+  ]
 
-  versioning {
-    enabled = false
-  }
+  dynamodb_tables = concat(local.appsync_dynamodb_datasources, ["signatures_${terraform.workspace}"])
 }
 
+module "network" {
+  source = "./modules/network"
+}
+
+// Buckets for FrontEnd Apps
+//resource "aws_s3_bucket" "bucket" {
+//  bucket = "${var.bucket_name}-${terraform.workspace}"
+//  acl = "private"
+//
+//  versioning {
+//    enabled = false
+//  }
+//}
+
+// End Users Authentication - OAUTH2 OIDC - Authorization Code Grant
 module "cognito" {
   source = "./modules/cognito"
   pool_name = "${var.pool_name}_${terraform.workspace}"
 }
 
+// Database Setup
 module "dynamodb" {
-  table_names       = ["customers_${terraform.workspace}", "accounts_${terraform.workspace}", "transactions_${terraform.workspace}", "favourite_accounts_${terraform.workspace}", "signatures_${terraform.workspace}"]
+  table_names       = local.dynamodb_tables
   source            = "./modules/dynamodb"
   region            = var.region
 //  TODO check how to dynamically include secondary indexes
 }
 
-// TODO need to create the IAM ROLE and bind it
-resource "aws_iam_role" "appsync_role" {
-  name               = "appsync_role_${terraform.workspace}"
-  path               = "/"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = "sts:AssumeRole"
-//        Sid    = ""
-        Principal = {
-          Service = "appsync.amazonaws.com"
-        }
-      },
-    ]
-  })
+// Roles and Policies to Access AWS Resources
+module "iam" {
+  source = "./modules/iam"
+  appsync_role_name = "${var.appsync_role_name}_${terraform.workspace}"
+  //  TODO remove signatures arn
+  dynamodb_arns = module.dynamodb.dynamodb_arns
 }
 
-resource "aws_iam_role_policy" "test_policy" {
-  name = "GraphQLApiDynamoDBAccessPolicy"
-  role = aws_iam_role.appsync_role.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "dynamodb:Query",
-          "dynamodb:Scan",
-          "dynamodb:GetItem"
-        ]
-        Effect   = "Allow"
-        Resource = module.dynamodb.dynamodb_arns
-      },
-    ]
-  })
-}
-
+// GraphQL API Setup
 module "appsync" {
   source            = "./modules/appsync"
   api_name          = "${var.api_name}_${terraform.workspace}"
   cognito_pool_id   = module.cognito.cognito_pool_id
-  table_names       = ["customers_${terraform.workspace}", "accounts_${terraform.workspace}", "transactions_${terraform.workspace}", "favourite_accounts_${terraform.workspace}", "signatures_${terraform.workspace}"]
-  role_arn          = aws_iam_role.appsync_role.arn
+  table_names       = local.appsync_dynamodb_datasources
+  role_arn          = module.iam.appsync_role_arn
 }
 
-//TODO move tables into a locals var.

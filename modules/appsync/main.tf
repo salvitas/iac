@@ -24,7 +24,6 @@ resource "aws_appsync_datasource" "appsync_dynamodb_ds" {
 //resource "aws_appsync_datasource" "appsync_eks_ds" {
 //  api_id              = aws_appsync_graphql_api.appsync.id
 //  name                = "microservices_${terraform.workspace}"
-////  service_role_arn    = var.table_arns[index(var.table_names, each.key)]
 //  type                = "HTTP"
 //  http_config {
 //    endpoint = "loadbalancerurl"

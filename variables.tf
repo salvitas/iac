@@ -20,6 +20,11 @@ variable "api_name" {
   description = "The AppSync api name"
 }
 
+variable "appsync_role_name" {
+  type    = string
+  description = "The AppSync Role Name"
+}
+
 //variable "table_name" {
 //  type    = string
 //  description = "The DynamoDB table name"

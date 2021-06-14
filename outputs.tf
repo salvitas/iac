@@ -17,3 +17,7 @@ output "appsync_id" {
 output "appsync_graphql_url" {
   value = module.appsync.appsync_graphql_url
 }
+
+output "iam_appsync_role_arn" {
+  value = module.iam.appsync_role_arn
+}
