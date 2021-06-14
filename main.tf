@@ -3,7 +3,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      env = terraform.workspace
+      env     = terraform.workspace
       project = "bankstart"
     }
   }
@@ -12,7 +12,7 @@ provider "aws" {
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "~> 3.0"
     }
   }
@@ -45,21 +45,21 @@ module "network" {
 
 // End Users Authentication - OAUTH2 OIDC - Authorization Code Grant
 module "cognito" {
-  source = "./modules/cognito"
+  source    = "./modules/cognito"
   pool_name = "${var.pool_name}_${terraform.workspace}"
 }
 
 // Database Setup
 module "dynamodb" {
-  table_names       = local.dynamodb_tables
-  source            = "./modules/dynamodb"
-  region            = var.region
-//  TODO check how to dynamically include secondary indexes
+  table_names = local.dynamodb_tables
+  source      = "./modules/dynamodb"
+  region      = var.region
+  //  TODO check how to dynamically include secondary indexes
 }
 
 // Roles and Policies to Access AWS Resources
 module "iam" {
-  source = "./modules/iam"
+  source            = "./modules/iam"
   appsync_role_name = "${var.appsync_role_name}_${terraform.workspace}"
   //  TODO remove signatures arn
   dynamodb_arns = module.dynamodb.dynamodb_arns
@@ -67,10 +67,10 @@ module "iam" {
 
 // GraphQL API Setup
 module "appsync" {
-  source            = "./modules/appsync"
-  api_name          = "${var.api_name}_${terraform.workspace}"
-  cognito_pool_id   = module.cognito.cognito_pool_id
-  table_names       = local.appsync_dynamodb_datasources
-  role_arn          = module.iam.appsync_role_arn
+  source          = "./modules/appsync"
+  api_name        = "${var.api_name}_${terraform.workspace}"
+  cognito_pool_id = module.cognito.cognito_pool_id
+  table_names     = local.appsync_dynamodb_datasources
+  role_arn        = module.iam.appsync_role_arn
 }
 

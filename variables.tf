@@ -5,23 +5,23 @@ variable "bucket_name" {
 }
 
 variable "region" {
-  default = "ap-southeast-1"
-  type    = string
+  default     = "ap-southeast-1"
+  type        = string
   description = "The AWS region where resources will be created"
 }
 
 variable "pool_name" {
-  type    = string
+  type        = string
   description = "The Cognito user pool name"
 }
 
 variable "api_name" {
-  type    = string
+  type        = string
   description = "The AppSync api name"
 }
 
 variable "appsync_role_name" {
-  type    = string
+  type        = string
   description = "The AppSync Role Name"
 }
 
