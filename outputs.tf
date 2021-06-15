@@ -1,3 +1,7 @@
+output "network_elb_url" {
+  value = module.network.elb_url
+}
+
 output "dynamodb_ids" {
   value = module.dynamodb.dynamodb_ids
 }

@@ -1,0 +1,56 @@
+﻿type List {
+	parameterName: String
+	value: String
+}
+
+type Post {
+	values: [String]
+}
+
+type Query {
+	getStages(action: actionStages, environment: String): Post
+	getFrontEndConfig(action: actionFrontEndConfig, environment: String, stage: String): getFrontEndConfigResponse
+	getParametersByTag(action: actionByTag, tagFilters: [tagFilter]): [List]
+	getValue(action: actionEnum!, decrypt: Boolean, parameterName: ID!): Post
+}
+
+enum actionByTag {
+	getParametersByTag
+}
+
+enum actionEnum {
+	getNamesByTag
+	getValuesByName
+	getValuesByPath
+}
+
+enum actionEnv {
+	getEnvironments
+}
+
+enum actionFrontEndConfig {
+	getFrontEndConfig
+}
+
+enum actionStages {
+	getStages
+}
+
+type getFrontEndConfigResponse {
+	environment: String
+	values: [keyvalue]
+}
+
+type keyvalue {
+	key: String
+	value: String
+}
+
+schema {
+	query: Query
+}
+
+input tagFilter {
+	tagName: String
+	tagValues: [String]
+}

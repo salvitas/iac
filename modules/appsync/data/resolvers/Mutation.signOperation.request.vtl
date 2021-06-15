@@ -1,0 +1,30 @@
+{
+  "version": "2018-05-29",
+  "method": "PUT",
+  "resourcePath": "/operation-signatures/$ctx.args.idSignatureOperation",
+  "params":{
+     "body":{
+            "operation_signature_id": "",
+            "current_state": null,
+            "expiration_date": null,
+            "operation_type": null,
+            "operation_id": "",
+            "signatures": [
+                {
+                    "id":"",
+                    "id_signature_operation":"",
+                    "user_id": "$ctx.args.userId",
+                    "signature":"$ctx.args.signature",
+                    "expiration_date":"",
+                    "sign_method":"OTP",
+                    "signant_role":" ",
+                    "signature_result":null
+                }
+            ]
+        },
+      "headers": {
+           "content-type": "application/json",
+           "microservice": "signatures"
+       }
+  }
+}

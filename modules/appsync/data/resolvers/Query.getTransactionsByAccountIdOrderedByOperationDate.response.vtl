@@ -1,0 +1,32 @@
+#set($itemsResponse=[])
+  #foreach( $item in $context.result.items)
+     $util.qr($itemsResponse.add(
+     	{
+            "id":$item.id,
+            "accountId":$item.account_id,
+            "type":$item.tx_type,
+            "operationDate":$item.operation_date,
+            "chargeDate":$item.charge_date,
+            "amount":$item.amount,
+            "currency":$item.currency,
+            "description":$item.description,
+            "location":$item.location,
+            "category":$item.category,
+            "commission": $item.comission,
+            "company": $item.company,
+            "cardHolder": $item.card_holder,
+            "cardNumber": $item.card_number,
+            "status": $item.status,
+            "holder": $item.holder,
+            "referenceNumber": $item.reference_number
+        }
+       )
+      )
+  #end
+
+  $util.toJson(
+    {
+		"items":$itemsResponse,
+        "nextToken":$context.result.nextToken
+    }
+  )

@@ -23,3 +23,8 @@ variable "role_arn" {
   type    = string
   description = "The DynamoDB Access Role ARN"
 }
+
+variable "loadbalancer_url" {
+  type    = string
+  description = "The HTTP Resource Load Balancer URL"
+}

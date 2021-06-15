@@ -1,0 +1,5 @@
+#if($ctx.result.statusCode == 200)
+    $util.toJson($util.parseJson($ctx.result.body).current_state)
+#else
+    $util.toJson($util.parseJson($ctx.result.body).detail)
+#end

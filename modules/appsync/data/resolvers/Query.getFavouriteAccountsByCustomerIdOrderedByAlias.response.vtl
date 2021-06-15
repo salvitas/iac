@@ -1,0 +1,22 @@
+#set($itemsResponse=[])
+  #foreach( $item in $context.result.items)
+     $util.qr($itemsResponse.add(
+     	{
+            "id":$item.id,
+      	    "customerId":$item.customer_id,
+      		"currency":$item.currency,
+      		"accountNumber":$item.account_number,
+      		"accountId":$item.account_id,
+      		"alias":$item.alias,
+      		"stakeholder":$item.stakeholder
+        }
+       )
+      )
+  #end
+
+  $util.toJson(
+    {
+		"items":$itemsResponse,
+        "nextToken":$context.result.nextToken
+    }
+  )

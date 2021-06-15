@@ -1,7 +1,5 @@
 First we create the base components for an environment:
-S3 bucket
-AWS_CF_Environment_network.yaml
-AWS_CF_Environment_ALB.yaml
+
 AWS_CF_Environment_ECScluster.yaml
 [optional] AWS_CF_Environment_NATgateway.yaml -> Conditions: CreateNATGateway: !Equals [ !Ref CreateNAT, "True" ]
 AWS_CF_Environment_SQS.yaml
@@ -19,6 +17,7 @@ We use workspaces to define different variables for different environments [dev,
 terraform workspace new dev
 terraform workspace new prod
 terraform workspace list
+terraform workspace select dev
 
 ## Usage
 terraform init

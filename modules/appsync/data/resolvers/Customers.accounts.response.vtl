@@ -1,0 +1,33 @@
+#set($itemsResponse=[])
+  #foreach( $item in $context.result.items)
+     $util.qr($itemsResponse.add(
+     	{
+            "id":$item.id,
+      		"accountType":$item.account_type,
+      		"customerId":$item.customer_id,
+      		"accountNumber":$item.account_number,
+      		"accountId":$item.account_id,
+      		"accountCurrency":$item.account_currency,
+      		"name":$item.name,
+      		"status":$item.status,
+	      	"balance":$item.balance,
+      		"averageExpenses":$item.average_expenses,
+     		"trend":$item.trend,
+        	"expensesCurrentDay": 	$item.expenses_current_day,
+            "expensesPreviousDay1": $item.expenses_previous_day_1,
+            "expensesPreviousDay2": $item.expenses_previous_day_2,
+            "expensesPreviousDay3": $item.expenses_previous_day_3,
+            "expensesPreviousDay4": $item.expenses_previous_day_4,
+            "expensesPreviousDay5": $item.expenses_previous_day_5,
+            "expensesPreviousDay6": $item.expenses_previous_day_6
+        }
+       )
+      )
+  #end
+
+  $util.toJson(
+    {
+		"items":$itemsResponse,
+    "nextToken":$context.result.nextToken
+    }
+  )

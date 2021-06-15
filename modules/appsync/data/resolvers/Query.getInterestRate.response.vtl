@@ -1,0 +1,18 @@
+#set($itemsResponse=[])
+#set($response = $util.parseJson($ctx.result.body))
+  #foreach( $item in $response)
+     $util.qr($itemsResponse.add(
+     	{
+          "productId":$item.productId,
+          "interestRate":$item.interestRate
+        }
+       )
+      )
+  #end
+
+  $util.toJson(
+    {
+	"items":$itemsResponse,
+    "nextToken":""
+    }
+  )

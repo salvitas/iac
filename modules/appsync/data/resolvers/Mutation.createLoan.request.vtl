@@ -1,0 +1,32 @@
+{
+	"version": "2018-05-29",
+	"method": "POST",
+	"resourcePath": "/loans",
+	"params": {
+		"body": {
+			"accountHolderKey": "$ctx.args.accountHolderKey",
+			"accountId": "$ctx.args.accountId",
+      "accountNumber": "$ctx.args.accountNumber",
+      "productTypeKey": "$ctx.args.productTypeKey",
+			"accountHolderType": "CLIENT",
+			"loanAmount": "$ctx.args.loanAmount",
+			"arrearsTolerancePeriod": "0",
+			"interestSettings": {
+				"interestRate": "$ctx.args.interestRate"
+			},
+			"penaltySettings": {
+				"penaltyRate": "0"
+			},
+			"scheduleSettings": {
+				"gracePeriod": "0",
+				"repaymentInstallments": "$ctx.args.repaymentInstallments",
+				"repaymentPeriodCount": "1",
+				"repaymentPeriodUnit": "MONTHS"
+			}
+		},
+		"headers": {
+			"content-type": "application/json",
+			"microservice": "loans"
+		}
+	}
+}

@@ -1,0 +1,209 @@
+﻿input TableBooleanFilterInput @aws_api_key @aws_cognito_user_pools {
+  eq: Boolean
+  ne: Boolean
+}
+
+input TableFloatFilterInput @aws_api_key @aws_cognito_user_pools {
+  between: [Float]
+  contains: Float
+  eq: Float
+  ge: Float
+  gt: Float
+  le: Float
+  lt: Float
+  ne: Float
+  notContains: Float
+}
+
+input TableStringFilterInput @aws_api_key @aws_cognito_user_pools {
+  beginsWith: String
+  between: [String]
+  contains: String
+  eq: String
+  ge: String
+  gt: String
+  le: String
+  lt: String
+  ne: String
+  notContains: String
+}
+
+input TableIDFilterInput @aws_api_key @aws_cognito_user_pools {
+  beginsWith: ID
+  between: [ID]
+  contains: ID
+  eq: ID
+  ge: ID
+  gt: ID
+  le: ID
+  lt: ID
+  ne: ID
+  notContains: ID
+}
+
+input TableAccountsFilterInput @aws_api_key @aws_cognito_user_pools {
+  accountType: TableStringFilterInput
+  customerId: TableStringFilterInput
+  id: TableStringFilterInput
+}
+
+input TableCustomersFilterInput @aws_api_key @aws_cognito_user_pools {
+  dob: TableStringFilterInput
+  emailAddress: TableStringFilterInput
+  firstName: TableStringFilterInput
+  id: TableStringFilterInput
+  lastName: TableStringFilterInput
+  mobilePhoneNumber: TableStringFilterInput
+  title: TableStringFilterInput
+}
+
+input TableTransactionsFilterInput @aws_api_key @aws_cognito_user_pools {
+  accountId: TableStringFilterInput
+  id: TableStringFilterInput
+  operationDate: TableStringFilterInput
+}
+
+type Transaction @aws_api_key @aws_cognito_user_pools {
+  accountId: String!
+  type: String!
+  amount: String!
+  category: String
+  chargeDate: String
+  currency: String!
+  description: String
+  id: String!
+  location: String!
+  operationDate: String!
+  commission: String
+  company: String
+  cardHolder: String
+  cardNumber: String
+  status: String
+  holder: String
+  referenceNumber: String
+}
+
+type TransactionsConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Transaction]
+  nextToken: String
+}
+
+type Account @aws_api_key @aws_cognito_user_pools {
+  accountCurrency: String!
+  accountNumber: String!
+  accountId: String!
+  accountType: String!
+  balance: String!
+  customerId: String!
+  id: String!
+  name: String
+  status: String!
+  averageExpenses: String!
+  trend: String!
+  expensesCurrentDay: String!
+  expensesPreviousDay1: String!
+  expensesPreviousDay2: String!
+  expensesPreviousDay3: String!
+  expensesPreviousDay4: String!
+  expensesPreviousDay5: String!
+  expensesPreviousDay6: String!
+  transactions(filter: TableTransactionsFilterInput, limit: Int, nextToken: String): TransactionsConnection
+}
+
+type AccountsConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Account]
+  nextToken: String
+}
+
+type Customer @aws_api_key @aws_cognito_user_pools {
+  accounts(filter: TableAccountsFilterInput, limit: Int, nextToken: String): AccountsConnection
+  dob: String!
+  emailAddress: String!
+  id: String!
+  firstName: String!
+  lastName: String!
+  mobilePhoneNumber: String!
+  title: String
+  totalBalance: String!
+}
+
+type CustomersConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Customer]
+  nextToken: String
+}
+
+type FavouriteAccount @aws_api_key @aws_cognito_user_pools {
+  customerId: String!
+  id: String!
+  currency: String!
+  accountNumber: String!
+  accountId: String!
+  alias: String!
+  stakeholder: String!
+}
+
+type FavouriteAccountConnection @aws_api_key @aws_cognito_user_pools {
+  items: [FavouriteAccount]
+  nextToken: String
+}
+
+type LoanProduct @aws_api_key @aws_cognito_user_pools {
+  productId: String!
+  interestRate: String!
+}
+
+type LoanProducts @aws_api_key @aws_cognito_user_pools {
+  items: [LoanProduct]
+  nextToken: String
+}
+
+
+type Mutation @aws_api_key @aws_cognito_user_pools {
+#  updateAccountAlias(accountId: String!, alias: String!): String
+  createTransfer(
+    amount: String!,
+    currency: String!,
+    description: String!,
+    customerId: String,
+    fromAccountId: String,
+    toAccountId: String,
+    recipientName: String
+  ): String
+  createFXTransfer(
+    originalAmount: String!,
+    destinationAmount: String!,
+    originalCurrency: String!,
+    destinationCurrency: String!,
+    fxRate: String!,
+    description: String,
+    customerId: String!,
+    fromAccountId: String!,
+    toAccountId: String!,
+    recipientName: String
+  ): String
+  createLoan(
+    accountHolderKey: String!,
+    accountId: String!,
+    accountNumber: String!,
+    productTypeKey: String!,
+    loanAmount: String!,
+    interestRate: String!,
+    repaymentInstallments: String!
+): String
+  signOperation(idSignatureOperation: String!, signature: String!, userId: String!): String
+}
+
+type Query @aws_api_key @aws_cognito_user_pools {
+  getCustomer(id: String!): Customer
+  getTransactionsByAccountIdOrderedByOperationDate(accountId: String!, limit: Int, nextToken: String): TransactionsConnection
+  getTransaction(id: String!): Transaction
+  getFavouriteAccountsByCustomerIdOrderedByAlias(customerId: String!, limit: Int, nextToken: String): FavouriteAccountConnection
+  getAccountsByCustomerIdOrderedByAccountType(customerId: String!, limit: Int, nextToken: String): AccountsConnection
+  getInterestRate: LoanProducts
+  getFXRate(destinationCurrency: String!): String
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}

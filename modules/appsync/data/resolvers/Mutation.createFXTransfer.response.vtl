@@ -1,0 +1,5 @@
+#if($ctx.result.statusCode == 200)
+    $util.toJson($util.parseJson($ctx.result.body).operation_signature_id)
+#else
+    $util.toJson($util.parseJson($ctx.result.body).detail)
+#end

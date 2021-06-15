@@ -1,0 +1,6 @@
+#set( $totalBalance = 0.00 )
+#foreach( $item in $context.result.items)
+	#set ($totalBalance = $totalBalance.valueOf($item.balance)+$totalBalance.valueOf($totalBalance))
+#end
+
+$util.toJson($totalBalance)
