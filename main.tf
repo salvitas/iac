@@ -19,6 +19,12 @@ terraform {
 }
 
 locals {
+  microservices_ecr_repositories = [
+    "accounts-service",
+    "loans-service",
+    "signatures-service"
+  ]
+
   appsync_dynamodb_datasources = [
     "customers_${terraform.workspace}",
     "accounts_${terraform.workspace}",
@@ -29,19 +35,26 @@ locals {
   dynamodb_tables = concat(local.appsync_dynamodb_datasources, ["signatures_${terraform.workspace}"])
 }
 
+// Base network Setup - VPC, Subnets, IGW, NatGW, ALB, Security Group and routing tables
 module "network" {
   source = "./modules/network"
 }
 
+// Microservices repositories
+module "ecr" {
+  source = "./modules/ecr"
+  ecr_repositories = local.microservices_ecr_repositories
+}
+
 // Buckets for FrontEnd Apps
-//resource "aws_s3_bucket" "bucket" {
-//  bucket = "${var.bucket_name}-${terraform.workspace}"
-//  acl = "private"
-//
-//  versioning {
-//    enabled = false
-//  }
-//}
+resource "aws_s3_bucket" "bucket" {
+  bucket = "${var.bucket_name}-${terraform.workspace}"
+  acl = "private"
+
+  versioning {
+    enabled = false
+  }
+}
 
 // End Users Authentication - OAUTH2 OIDC - Authorization Code Grant
 module "cognito" {

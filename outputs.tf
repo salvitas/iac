@@ -21,3 +21,11 @@ output "appsync_graphql_url" {
 output "iam_appsync_role_arn" {
   value = module.iam.appsync_role_arn
 }
+
+output "ecr_repos_url" {
+  value = module.ecr.ecr_repos_url
+}
+
+output "ecr_repos_arn" {
+  value = module.ecr.ecr_repos_arn
+}
