@@ -74,8 +74,8 @@ module "dynamodb" {
 module "iam" {
   source = "./modules/iam"
   appsync_role_name = "${var.appsync_role_name}_${terraform.workspace}"
-  //  TODO remove signatures arn
   dynamodb_arns = concat(module.dynamodb.dynamodb_arns, formatlist("%s/*", module.dynamodb.dynamodb_arns))
+  eks_role_name = "${var.eks_role_name}_${terraform.workspace}"
 }
 
 // GraphQL API Setup

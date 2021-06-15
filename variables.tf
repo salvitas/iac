@@ -25,6 +25,10 @@ variable "appsync_role_name" {
   description = "The AppSync Role Name"
 }
 
+variable "eks_role_name" {
+  type    = string
+  description = "The EKS Role Name"
+}
 //variable "table_name" {
 //  type    = string
 //  description = "The DynamoDB table name"

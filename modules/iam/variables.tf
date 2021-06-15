@@ -8,3 +8,7 @@ variable "dynamodb_arns" {
   description = "The list of arns for the appsync - dynamodb policy"
 }
 
+variable "eks_role_name" {
+  type    = string
+  description = "The EKS Role Name"
+}
