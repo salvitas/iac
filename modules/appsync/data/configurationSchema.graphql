@@ -1,17 +1,15 @@
-﻿type List {
+﻿input tagFilter {
+	tagName: String
+	tagValues: [String]
+}
+
+type List {
 	parameterName: String
 	value: String
 }
 
 type Post {
 	values: [String]
-}
-
-type Query {
-	getStages(action: actionStages, environment: String): Post
-	getFrontEndConfig(action: actionFrontEndConfig, environment: String, stage: String): getFrontEndConfigResponse
-	getParametersByTag(action: actionByTag, tagFilters: [tagFilter]): [List]
-	getValue(action: actionEnum!, decrypt: Boolean, parameterName: ID!): Post
 }
 
 enum actionByTag {
@@ -46,11 +44,14 @@ type keyvalue {
 	value: String
 }
 
+type Query {
+	getStages(action: actionStages, environment: String): Post
+	getFrontEndConfig(action: actionFrontEndConfig, environment: String, stage: String): getFrontEndConfigResponse
+	getParametersByTag(action: actionByTag, tagFilters: [tagFilter]): [List]
+	getValue(action: actionEnum!, decrypt: Boolean, parameterName: ID!): Post
+}
+
 schema {
 	query: Query
 }
 
-input tagFilter {
-	tagName: String
-	tagValues: [String]
-}

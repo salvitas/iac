@@ -96,17 +96,17 @@ type Account @aws_api_key @aws_cognito_user_pools {
   balance: String!
   customerId: String!
   id: String!
-  name: String
+  name: String!
   status: String!
-  averageExpenses: String!
-  trend: String!
-  expensesCurrentDay: String!
-  expensesPreviousDay1: String!
-  expensesPreviousDay2: String!
-  expensesPreviousDay3: String!
-  expensesPreviousDay4: String!
-  expensesPreviousDay5: String!
-  expensesPreviousDay6: String!
+  averageExpenses: String
+  trend: String
+  expensesCurrentDay: String
+  expensesPreviousDay1: String
+  expensesPreviousDay2: String
+  expensesPreviousDay3: String
+  expensesPreviousDay4: String
+  expensesPreviousDay5: String
+  expensesPreviousDay6: String
   transactions(filter: TableTransactionsFilterInput, limit: Int, nextToken: String): TransactionsConnection
 }
 

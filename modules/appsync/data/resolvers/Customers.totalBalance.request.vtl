@@ -3,12 +3,12 @@
   "operation" : "Query",
 
   "query" : {
-     "expression": "customer_id = :customer_Id",
+     "expression": "customerId = :customer_Id",
      "expressionValues" : {
      	":customer_Id" : { "S" : "$ctx.source.id" },
      }
   },
-  "index" : "customer_id-account_type-index",
+  "index" : "customerId-type-index",
   "limit": $util.defaultIfNull($ctx.args.limit, 20),
   "nextToken": $util.toJson($util.defaultIfNullOrEmpty($ctx.args.nextToken, null)),
   "scanIndexForward": true,

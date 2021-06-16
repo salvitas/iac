@@ -29,7 +29,7 @@ variable "pub_sub_b_cidr" {
 }
 
 variable "sg_name" {
-  default = "bankstart_elb_sg"
+  default = "bankstart_alb_sg"
   type = string
   description = "The Security Group Name"
 }

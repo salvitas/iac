@@ -29,18 +29,18 @@ resource "aws_dynamodb_table" "accounts" {
     type = "S"
   }
   attribute {
-    name = "customer_id"
+    name = "customerId"
     type = "S"
   }
   attribute {
-    name = "account_type"
+    name = "type"
     type = "S"
   }
 
   global_secondary_index {
-    name = "customer_id-account_type-index"
-    hash_key = "customer_id"
-    range_key = "account_type"
+    name = "customerId-type-index"
+    hash_key = "customerId"
+    range_key = "type"
     projection_type = "ALL"
   }
 

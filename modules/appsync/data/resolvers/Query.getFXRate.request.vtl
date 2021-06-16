@@ -1,10 +1,11 @@
 {
     "version": "2018-05-29",
     "method": "GET",
-    "resourcePath": "/accounts/fx-rate/$ctx.args.destinationCurrency",
+    "resourcePath": "/accounts-service/accounts/fx-rate/$ctx.args.destinationCurrency",
     "params":{
         "headers": {
-            "microservice": "accounts"
+            "microservice": "accounts",
+            "Authorization": "Bearer $context.request.headers.Authorization"
         }
     }
 }
