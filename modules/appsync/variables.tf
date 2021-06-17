@@ -21,7 +21,7 @@ variable "table_names" {
 
 variable "role_arn" {
   type    = string
-  description = "The DynamoDB Access Role ARN"
+  description = "The AppSync Role ARN"
 }
 
 variable "loadbalancer_url" {

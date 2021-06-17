@@ -9,6 +9,10 @@ resource "aws_appsync_graphql_api" "appsync" {
   }
 
   schema = file("${path.module}/data/schema.graphql")
+  log_config {
+    cloudwatch_logs_role_arn = var.role_arn
+    field_log_level = "NONE"
+  }
 }
 
 resource "aws_appsync_datasource" "appsync_dynamodb_ds" {

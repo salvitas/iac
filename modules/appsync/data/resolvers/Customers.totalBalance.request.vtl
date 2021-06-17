@@ -3,9 +3,9 @@
   "operation" : "Query",
 
   "query" : {
-     "expression": "customerId = :customer_Id",
+     "expression": "customerId = :customer_id",
      "expressionValues" : {
-     	":customer_Id" : { "S" : "$ctx.source.id" },
+     	":customer_id" : { "S" : "$ctx.source.id" },
      }
   },
   "index" : "customerId-type-index",

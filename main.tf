@@ -3,8 +3,8 @@ provider "aws" {
 
   default_tags {
     tags = {
-      env     = terraform.workspace
-      project = "bankstart"
+      environment = terraform.workspace
+      namespace   = "bankstart"
     }
   }
 }

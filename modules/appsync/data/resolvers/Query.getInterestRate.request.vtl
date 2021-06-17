@@ -1,10 +1,11 @@
 {
     "version": "2018-05-29",
     "method": "GET",
-    "resourcePath": "/loans/products",
+    "resourcePath": "/loans-service/loans/products",
     "params":{
         "headers": {
-            "microservice": "loans"
+            "microservice": "loans",
+            "Authorization": "Bearer $context.request.headers.authorization"
         }
     }
 }

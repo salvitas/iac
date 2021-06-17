@@ -1,14 +1,14 @@
 {
   "version": "2018-05-29",
   "method": "PUT",
-  "resourcePath": "/accounts/$ctx.args.accountId",
+  "resourcePath": "/accounts-service/accounts/$ctx.args.accountId",
   "params":{
       "query": {
 	      	"alias": "$ctx.args.alias",
      },
       "headers": {
-           ##TODO: update the token transfer
-           "X-Auth-Token": "A00012357292673181859!3wZMLrq8LdDUW2dFmvMe6fHD+tg8JYa40OmgoyQZvObWY04Aa1WUrML1coCdXj9YTsdN/ELcZD9li50svz/tTKVOsVA="
+            "microservice": "accounts"
+            "Authorization": "Bearer $context.request.headers.authorization"
        }
   }
 }

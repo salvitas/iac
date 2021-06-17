@@ -1,7 +1,7 @@
 {
   "version": "2018-05-29",
   "method": "PUT",
-  "resourcePath": "/operation-signatures/$ctx.args.idSignatureOperation",
+  "resourcePath": "/signatures-service/operation-signatures/$ctx.args.idSignatureOperation",
   "params":{
      "body":{
             "operation_signature_id": "",
@@ -24,7 +24,8 @@
         },
       "headers": {
            "content-type": "application/json",
-           "microservice": "signatures"
+           "microservice": "signatures",
+           "Authorization": "Bearer $context.request.headers.authorization"
        }
   }
 }

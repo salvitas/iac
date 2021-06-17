@@ -1,8 +1,7 @@
 {
   "version": "2018-05-29",
   "method": "POST",
-  ## E.G. if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts **
-  "resourcePath": "/accounts/fx-transfer",
+  "resourcePath": "/accounts-service/accounts/fx-transfer",
   "params":{
       "body":{
             "client_id": "$ctx.args.customerId",
@@ -25,7 +24,8 @@
        },
       "headers": {
            "content-type": "application/json",
-           "microservice": "accounts"
+           "microservice": "accounts",
+           "Authorization": "Bearer $context.request.headers.authorization"
        }
   }
 }

@@ -1,13 +1,13 @@
 {
 	"version": "2018-05-29",
 	"method": "POST",
-	"resourcePath": "/loans",
+	"resourcePath": "/loans-service/loans",
 	"params": {
 		"body": {
 			"accountHolderKey": "$ctx.args.accountHolderKey",
 			"accountId": "$ctx.args.accountId",
-      "accountNumber": "$ctx.args.accountNumber",
-      "productTypeKey": "$ctx.args.productTypeKey",
+            "accountNumber": "$ctx.args.accountNumber",
+            "productTypeKey": "$ctx.args.productTypeKey",
 			"accountHolderType": "CLIENT",
 			"loanAmount": "$ctx.args.loanAmount",
 			"arrearsTolerancePeriod": "0",
@@ -26,7 +26,8 @@
 		},
 		"headers": {
 			"content-type": "application/json",
-			"microservice": "loans"
+			"microservice": "loans",
+			"Authorization": "Bearer $context.request.headers.authorization"
 		}
 	}
 }
