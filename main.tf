@@ -48,13 +48,33 @@ module "ecr" {
 }
 
 // Buckets for FrontEnd - Web and App (iOS & Android)
-resource "aws_s3_bucket" "bucket" {
-  bucket = "${var.namespace}-${var.bucket_name}-${terraform.workspace}"
-  acl    = "private"
+resource "aws_s3_bucket" "web_bucket" {
+  bucket = "${var.namespace}-${terraform.workspace}-${var.web_bucket_name_1}"
+  acl    = "public-read"
 
-  versioning {
-    enabled = false
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
   }
+}
+
+resource "aws_s3_bucket_policy" "web_bucket_policy" {
+  bucket = aws_s3_bucket.web_bucket.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Id      = "${var.namespace}-${terraform.workspace}-staticwebsitepolicy"
+    Statement = [
+      {
+        Sid       = "PublicReadForGetBucketObjects"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource = [
+          "${aws_s3_bucket.web_bucket.arn}/*"
+        ]
+      },
+    ]
+  })
 }
 
 // End Users Authentication - OAUTH2 OIDC - Authorization Code Grant
@@ -101,4 +121,16 @@ module "appsync" {
   loadbalancer_url = module.network.elb_url
 }
 
+module "appsync_domain" {
+  source = "matti/urlparse/external"
+  url = module.appsync.appsync_graphql_url
+}
+
+module "cloudfront" {
+  source = "./modules/cloudfront"
+  cert_name = "*.stoks.io"
+  hosted_zone_name = "stoks.io" // aka. Domain Name
+  appsync_domain_name = module.appsync_domain.host
+  static_bucket_domain = aws_s3_bucket.web_bucket.bucket_domain_name
+}
 // TODO create a CloudFront Distribution for grapqhl, app, web - DNS A record (Alias to Cloudfront) to call appsync graphql api https://bx6g65dqdnfkdo27uyy4r7jsv4.appsync-api.ap-southeast-1.amazonaws.com/graphql

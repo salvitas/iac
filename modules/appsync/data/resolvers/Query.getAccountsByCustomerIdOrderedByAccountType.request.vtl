@@ -2,10 +2,13 @@
   "version": "2017-02-28",
   "operation": "Query",
   "query": {
-    "expression": "customerId = :customer_id",
+    "expression": "#customer_id = :customer_id",
+    "expressionNames": {
+      "#customer_id": "customer_id",
+    },
     "expressionValues": {
       ":customer_id": $util.dynamodb.toDynamoDBJson($ctx.args.customerId),
-    },
+    }
   },
   "index": "customerId-type-index",
   "limit": $util.defaultIfNull($ctx.args.limit, 20),

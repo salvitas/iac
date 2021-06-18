@@ -59,18 +59,18 @@ resource "aws_dynamodb_table" "transactions" {
     type = "S"
   }
   attribute {
-    name = "account_id"
+    name = "accountId"
     type = "S"
   }
   attribute {
-    name = "operation_date"
+    name = "operationDate"
     type = "S"
   }
 
   global_secondary_index {
-    name = "account_id-operation_date-index"
-    hash_key = "account_id"
-    range_key = "operation_date"
+    name = "accountId-operationDate-index"
+    hash_key = "accountId"
+    range_key = "operationDate"
     projection_type = "ALL"
   }
 
@@ -89,7 +89,7 @@ resource "aws_dynamodb_table" "favourite_accounts" {
     type = "S"
   }
   attribute {
-    name = "customer_id"
+    name = "customerId"
     type = "S"
   }
   attribute {
@@ -98,8 +98,8 @@ resource "aws_dynamodb_table" "favourite_accounts" {
   }
 
   global_secondary_index {
-    name = "customer_id-alias-index"
-    hash_key = "customer_id"
+    name = "customerId-alias-index"
+    hash_key = "customerId"
     range_key = "alias"
     projection_type = "ALL"
   }

@@ -105,6 +105,7 @@ resource "aws_security_group" "ecs_sg" {
 // Microservice specific config - testing
 resource "aws_cloudwatch_log_group" "ecs" {
   name = "/ecs/accounts-service-${terraform.workspace}"
+  retention_in_days = 7
 }
 
 resource "aws_ecs_task_definition" "accounts_service_task_definition" {

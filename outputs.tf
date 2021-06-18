@@ -22,3 +22,7 @@ output "cognito_pool_client_secret" {
 output "ecr_repositories" {
   value = module.ecr.ecr_repos_url
 }
+
+output "graphql_entry_point" {
+  value = module.cloudfront.graphql_entry_point
+}
