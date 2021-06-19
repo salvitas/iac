@@ -10,14 +10,8 @@ variable "namespace" {
   description = "The application namespace that will be prefixed when creating infrastructure resources"
 }
 
-variable "web_bucket_name_1" {
-  default     = "staticwebsitecontent1"
-  type        = string
-  description = "The S3 static website bucket name"
-}
-
-variable "web_bucket_name_2" {
-  default     = "staticwebsitecontent2"
+variable "web_bucket_name" {
+  default     = "staticwebcontent"
   type        = string
   description = "The S3 static website bucket name"
 }

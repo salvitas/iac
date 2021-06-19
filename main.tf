@@ -49,7 +49,7 @@ module "ecr" {
 
 // Buckets for FrontEnd - Web and App (iOS & Android)
 resource "aws_s3_bucket" "web_bucket" {
-  bucket = "${var.namespace}-${terraform.workspace}-${var.web_bucket_name_1}"
+  bucket = "${var.namespace}-${terraform.workspace}-${var.web_bucket_name}"
   acl    = "public-read"
 
   website {
@@ -113,6 +113,7 @@ module "ecs" {
 
 // GraphQL API Setup
 module "appsync" {
+  depends_on = [module.dynamodb]
   source           = "./modules/appsync"
   api_name         = "${var.namespace}_${var.api_name}_${terraform.workspace}"
   cognito_pool_id  = module.cognito.cognito_pool_id
@@ -131,6 +132,5 @@ module "cloudfront" {
   cert_name = "*.stoks.io"
   hosted_zone_name = "stoks.io" // aka. Domain Name
   appsync_domain_name = module.appsync_domain.host
-  static_bucket_domain = aws_s3_bucket.web_bucket.bucket_domain_name
+  static_bucket_domain = aws_s3_bucket.web_bucket.bucket_regional_domain_name // Using regional domain to avoid DNS propagation waiting and cloudfront redirecting to S3 URL
 }
-// TODO create a CloudFront Distribution for grapqhl, app, web - DNS A record (Alias to Cloudfront) to call appsync graphql api https://bx6g65dqdnfkdo27uyy4r7jsv4.appsync-api.ap-southeast-1.amazonaws.com/graphql

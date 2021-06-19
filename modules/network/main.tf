@@ -104,17 +104,20 @@ resource "aws_nat_gateway" "natgateway_1" {
     Name = "bankstart_natgw_a_${terraform.workspace}"
   }
 }
-resource "aws_eip" "eip_natgw2" {
-  count = "1"
-}
-resource "aws_nat_gateway" "natgateway_2" {
-  count = "1"
-  allocation_id = aws_eip.eip_natgw2[count.index].id
-  subnet_id = aws_subnet.pub_sub_b.id
-  tags = {
-    Name = "bankstart_natgw_b_${terraform.workspace}"
-  }
-}
+
+// Commenting out 1 NAT GW and pointing priv subnet b t NAT GW A (keep cost down)
+
+//resource "aws_eip" "eip_natgw2" {
+//  count = "1"
+//}
+//resource "aws_nat_gateway" "natgateway_2" {
+//  count = "1"
+//  allocation_id = aws_eip.eip_natgw2[count.index].id
+//  subnet_id = aws_subnet.pub_sub_b.id
+//  tags = {
+//    Name = "bankstart_natgw_b_${terraform.workspace}"
+//  }
+//}
 
 # Create private route tables and NAT associations
 resource "aws_route_table" "priv_sub_a_rt" {
@@ -139,7 +142,7 @@ resource "aws_route_table" "priv_sub_b_rt" {
   vpc_id = aws_vpc.vpc.id
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.natgateway_2[count.index].id
+    nat_gateway_id = aws_nat_gateway.natgateway_1[count.index].id
   }
   tags = {
     Name = "bankstart_private_b_${terraform.workspace}"

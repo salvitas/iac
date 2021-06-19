@@ -3,7 +3,7 @@ The custom attribute "customerId" still needs to be set using AWS CLI
 
 ```
 aws cognito-idp admin-update-user-attributes \
---user-pool-id ap-southeast-1_ORoByMDKf \
+--user-pool-id ap-southeast-1_3txYHCtGy \
 --username salva \
 --user-attributes Name="custom:customerId",Value="475142622"
 ```

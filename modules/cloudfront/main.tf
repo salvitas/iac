@@ -20,6 +20,10 @@ data "aws_acm_certificate" "issued" {
   statuses = ["ISSUED"]
 }
 
+data "aws_cloudfront_cache_policy" "managed-caching_optimized" {
+  name = "Managed-CachingOptimized"
+}
+
 resource "aws_cloudfront_distribution" "cloudfront_distribution" {
   aliases = ["${terraform.workspace}.${data.aws_route53_zone.selected.name}"]
 
@@ -31,7 +35,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
       http_port = 80
       https_port = 443
       origin_protocol_policy = "https-only"
-      origin_ssl_protocols = ["TLSv1.2", "SSLv3"]
+      origin_ssl_protocols = ["SSLv3", "TLSv1.2"]
     }
   }
 
@@ -43,7 +47,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
       http_port = 80
       https_port = 443
       origin_protocol_policy = "https-only"
-      origin_ssl_protocols = ["TLSv1.2", "SSLv3"]
+      origin_ssl_protocols = ["SSLv3", "TLSv1.2"]
     }
   }
 
@@ -55,7 +59,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
       http_port = 80
       https_port = 443
       origin_protocol_policy = "https-only"
-      origin_ssl_protocols = ["TLSv1.2", "SSLv3"]
+      origin_ssl_protocols = ["SSLv3", "TLSv1.2"]
     }
   }
 
@@ -63,11 +67,11 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
     target_origin_id = local.static_web_origin
     allowed_methods  = ["HEAD", "GET"]
     cached_methods   = ["HEAD", "GET"]
-//    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingOptimized (https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html)
+//    cache_policy_id = data.aws_cloudfront_cache_policy.managed-caching_optimized.id # Managed-CachingOptimized (https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html)
     compress = true
+
     forwarded_values {
       query_string = false
-
       cookies {
         forward = "none"
       }
@@ -86,8 +90,10 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 
     forwarded_values {
       query_string = false
-      headers      = ["*"]
-
+      headers = [
+        "x-api-key",
+        "Authorization"
+      ]
       cookies {
         forward = "none"
       }
@@ -100,16 +106,15 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
     path_pattern     = "/app/*"
     allowed_methods  = ["HEAD", "GET"]
     cached_methods   = ["HEAD", "GET"]
-//    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingDisabled https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
+//    cache_policy_id = data.aws_cloudfront_cache_policy.managed-caching_optimized.id # Managed-CachingOptimized https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
+    compress = true
 
     forwarded_values {
       query_string = false
-
       cookies {
         forward = "none"
       }
     }
-    compress = true
     viewer_protocol_policy = "redirect-to-https"
   }
 

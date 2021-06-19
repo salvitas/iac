@@ -24,5 +24,5 @@ output "ecr_repositories" {
 }
 
 output "graphql_entry_point" {
-  value = module.cloudfront.graphql_entry_point
+  value = "https://${module.cloudfront.graphql_entry_point}/graphql"
 }
