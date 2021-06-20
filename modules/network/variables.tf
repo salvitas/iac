@@ -28,8 +28,7 @@ variable "pub_sub_b_cidr" {
   description = "The VPC CIDR block for network"
 }
 
-variable "sg_name" {
-  default = "bankstart_alb_sg"
+variable "global_namespace" {
   type = string
-  description = "The Security Group Name"
+  description = "The globally defined namespace to prefix resources"
 }

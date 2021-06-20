@@ -1,17 +1,24 @@
 variable "region" {
-  default     = "ap-southeast-1"
   type        = string
   description = "The AWS region where resources will be created"
 }
 
 variable "namespace" {
-  default     = "bankstart"
   type        = string
   description = "The application namespace that will be prefixed when creating infrastructure resources"
 }
 
+variable "cert_name" {
+  type        = string
+  description = "The certificate name from ACM to be used in dynamically created cloudfront distributions"
+}
+
+variable "hosted_zone_name" {
+  type        = string
+  description = "The default domain name for this application"
+}
+
 variable "web_bucket_name" {
-  default     = "staticwebcontent"
   type        = string
   description = "The S3 static website bucket name"
 }

@@ -3,7 +3,7 @@ resource "aws_appsync_graphql_api" "appsync" {
   name = var.api_name
 
   user_pool_config {
-    aws_region = var.region
+    aws_region = var.global_region
     user_pool_id = var.cognito_pool_id
     default_action = "ALLOW" //DENY
   }
@@ -43,7 +43,7 @@ resource "aws_appsync_resolver" "customers_account_resolver" {
   api_id      = aws_appsync_graphql_api.appsync.id
   type        = "Customer"
   field       = "accounts"
-  data_source = "accounts_dev" // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
+  data_source = var.accounts_data_source // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
   request_template = file("${path.module}/data/resolvers/Customers.accounts.request.vtl")
   response_template = file("${path.module}/data/resolvers/Customers.accounts.response.vtl")
 }
@@ -53,7 +53,7 @@ resource "aws_appsync_resolver" "customers_totalbalance_resolver" {
   api_id      = aws_appsync_graphql_api.appsync.id
   type        = "Customer"
   field       = "totalBalance"
-  data_source = "accounts_dev" // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
+  data_source = var.accounts_data_source // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
   request_template = file("${path.module}/data/resolvers/Customers.totalBalance.request.vtl")
   response_template = file("${path.module}/data/resolvers/Customers.totalBalance.response.vtl")
 }
@@ -63,7 +63,7 @@ resource "aws_appsync_resolver" "accounts_transactions_resolver" {
   api_id      = aws_appsync_graphql_api.appsync.id
   type        = "Account"
   field       = "transactions"
-  data_source = "transactions_dev" // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
+  data_source = var.transactions_data_source // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
   request_template = file("${path.module}/data/resolvers/Accounts.transactions.request.vtl")
   response_template = file("${path.module}/data/resolvers/Accounts.transactions.response.vtl")
 }
@@ -73,7 +73,7 @@ resource "aws_appsync_resolver" "get_customers_resolver" {
   api_id      = aws_appsync_graphql_api.appsync.id
   type        = "Query"
   field       = "getCustomer"
-  data_source = "customers_dev" // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
+  data_source = var.customers_data_source // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
   request_template = file("${path.module}/data/resolvers/Query.getCustomer.request.vtl")
   response_template = file("${path.module}/data/resolvers/Query.getCustomer.response.vtl")
 }
@@ -83,7 +83,7 @@ resource "aws_appsync_resolver" "get_transactions_by_accountid_resolver" {
   api_id      = aws_appsync_graphql_api.appsync.id
   type        = "Query"
   field       = "getTransactionsByAccountIdOrderedByOperationDate"
-  data_source = "transactions_dev" // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
+  data_source = var.transactions_data_source // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
   request_template = file("${path.module}/data/resolvers/Query.getTransactionsByAccountIdOrderedByOperationDate.request.vtl")
   response_template = file("${path.module}/data/resolvers/Query.getTransactionsByAccountIdOrderedByOperationDate.response.vtl")
 }
@@ -93,7 +93,7 @@ resource "aws_appsync_resolver" "get_transaction_resolver" {
   api_id      = aws_appsync_graphql_api.appsync.id
   type        = "Query"
   field       = "getTransaction"
-  data_source = "transactions_dev" // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
+  data_source = var.transactions_data_source // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
   request_template = file("${path.module}/data/resolvers/Query.getTransaction.request.vtl")
   response_template = file("${path.module}/data/resolvers/Query.getTransaction.response.vtl")
 }
@@ -103,7 +103,7 @@ resource "aws_appsync_resolver" "get_fav_accounts_by_customerid_resolver" {
   api_id      = aws_appsync_graphql_api.appsync.id
   type        = "Query"
   field       = "getFavouriteAccountsByCustomerIdOrderedByAlias"
-  data_source = "favourite_accounts_dev" // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
+  data_source = var.favourite_account_data_source // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
   request_template = file("${path.module}/data/resolvers/Query.getFavouriteAccountsByCustomerIdOrderedByAlias.request.vtl")
   response_template = file("${path.module}/data/resolvers/Query.getFavouriteAccountsByCustomerIdOrderedByAlias.response.vtl")
 }
@@ -113,7 +113,7 @@ resource "aws_appsync_resolver" "get_accounts_by_customerid_resolver" {
   api_id      = aws_appsync_graphql_api.appsync.id
   type        = "Query"
   field       = "getAccountsByCustomerIdOrderedByAccountType"
-  data_source = "accounts_dev" // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
+  data_source = var.accounts_data_source // TODO: try to make this dynamic aws_appsync_datasource.appsync_dynamodb_ds.name
   request_template = file("${path.module}/data/resolvers/Query.getAccountsByCustomerIdOrderedByAccountType.request.vtl")
   response_template = file("${path.module}/data/resolvers/Query.getAccountsByCustomerIdOrderedByAccountType.response.vtl")
 }

@@ -87,6 +87,6 @@ resource "aws_cognito_user_pool_client" "client" {
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
-  domain = "bankstart-${terraform.workspace}"
+  domain = var.domain_name
   user_pool_id = aws_cognito_user_pool.iam.id
 }

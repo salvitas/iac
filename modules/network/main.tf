@@ -3,7 +3,7 @@ resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr
   enable_dns_hostnames = true
   tags = {
-    Name = "bankstart_vpc_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_vpc"
   }
 }
 
@@ -15,7 +15,7 @@ resource "aws_subnet" "priv_sub_a" {
   // cidrsubnet(aws_vpc.vpc.cidr_block, 8, 1)
   availability_zone = "ap-southeast-1a"
   tags = {
-    Name = "bankstart_privatesubnet_a_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_privatesubnet_a"
   }
 }
 // Create Private Subnet B
@@ -26,7 +26,7 @@ resource "aws_subnet" "priv_sub_b" {
   // cidrsubnet(aws_vpc.vpc.cidr_block, 8, 1)
   availability_zone = "ap-southeast-1b"
   tags = {
-    Name = "bankstart_privatesubnet_b_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_privatesubnet_b"
   }
 }
 
@@ -40,7 +40,7 @@ resource "aws_subnet" "pub_sub_a" {
   availability_zone = "ap-southeast-1a"
   map_public_ip_on_launch = true
   tags = {
-    Name = "bankstart_publicsubnet_a_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_publicsubnet_a"
   }
 }
 // Create Public Subnet B
@@ -53,7 +53,7 @@ resource "aws_subnet" "pub_sub_b" {
   availability_zone = "ap-southeast-1b"
   map_public_ip_on_launch = true
   tags = {
-    Name = "bankstart_publicsubnet_b_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_publicsubnet_b"
   }
 }
 
@@ -64,7 +64,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name = "bankstart_igw_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_igw"
   }
 }
 
@@ -79,7 +79,7 @@ resource "aws_route_table" "public_rt" {
   }
 
   tags = {
-    Name = "bankstart_public_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_public_rt"
   }
 }
 
@@ -101,7 +101,7 @@ resource "aws_nat_gateway" "natgateway_1" {
   allocation_id = aws_eip.eip_natgw1[count.index].id
   subnet_id = aws_subnet.pub_sub_a.id
   tags = {
-    Name = "bankstart_natgw_a_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_natgw_a"
   }
 }
 
@@ -128,7 +128,7 @@ resource "aws_route_table" "priv_sub_a_rt" {
     nat_gateway_id = aws_nat_gateway.natgateway_1[count.index].id
   }
   tags = {
-    Name = "bankstart_private_a_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_private_a"
   }
 }
 resource "aws_route_table_association" "priv_sub_a_to_natgw1" {
@@ -145,7 +145,7 @@ resource "aws_route_table" "priv_sub_b_rt" {
     nat_gateway_id = aws_nat_gateway.natgateway_1[count.index].id
   }
   tags = {
-    Name = "bankstart_private_b_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_private_b"
   }
 }
 resource "aws_route_table_association" "priv_sub_b_to_natgw2" {
@@ -157,7 +157,7 @@ resource "aws_route_table_association" "priv_sub_b_to_natgw2" {
 // Create security group for load balancer
 resource "aws_security_group" "elb_sg" {
   depends_on = [aws_vpc.vpc]
-  name = "${var.sg_name}_${terraform.workspace}"
+  name = "${var.global_namespace}_${terraform.workspace}_alb_sg"
   description = "ALB Security Group to access ECS from Public Subnet"
   vpc_id = aws_vpc.vpc.id
   ingress {
@@ -179,13 +179,13 @@ resource "aws_security_group" "elb_sg" {
   }
 
   tags = {
-    Name = "${var.sg_name}_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_alb_sg"
   }
 }
 
 // Create Target group
 resource "aws_lb_target_group" "target_group" {
-  name = "bankstart-tg-${terraform.workspace}"
+  name = "${var.global_namespace}-${terraform.workspace}-tg"
   depends_on = [aws_vpc.vpc]
   vpc_id = aws_vpc.vpc.id
   port = 80
@@ -205,7 +205,7 @@ resource "aws_lb_target_group" "target_group" {
 }
 // Application Load Balancer
 resource "aws_lb" "alb" {
-  name = "bankstart-alb-${terraform.workspace}"
+  name = "${var.global_namespace}-${terraform.workspace}-alb"
   internal = false
   load_balancer_type = "application"
   security_groups = [

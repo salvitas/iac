@@ -1,136 +1,152 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.46"
+    }
+  }
+}
+
 provider "aws" {
   region = var.region
 
   default_tags {
     tags = {
       environment = terraform.workspace
-      namespace   = "bankstart"
-    }
-  }
-}
-
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.0"
+      namespace   = var.namespace
     }
   }
 }
 
 locals {
+  customers_table          = "${var.namespace}_${terraform.workspace}_customers"
+  accounts_table           = "${var.namespace}_${terraform.workspace}_accounts"
+  transactions_table       = "${var.namespace}_${terraform.workspace}_transactions"
+  favourite_accounts_table = "${var.namespace}_${terraform.workspace}_favourite_accounts"
+  signatures_table         = "${var.namespace}_${terraform.workspace}_signatures"
+
   microservices_ecr_repositories = [
-    "accounts-service",
-    "loans-service",
-    "signatures-service"
+    "${var.namespace}/accounts-service",
+    "${var.namespace}/loans-service",
+    "${var.namespace}/signatures-service"
   ]
 
   appsync_dynamodb_datasources = [
-    "customers_${terraform.workspace}",
-    "accounts_${terraform.workspace}",
-    "transactions_${terraform.workspace}",
-    "favourite_accounts_${terraform.workspace}"
+    local.customers_table,
+    local.accounts_table,
+    local.transactions_table,
+    local.favourite_accounts_table
   ]
 
   dynamodb_tables = concat(local.appsync_dynamodb_datasources, [
-  "signatures_${terraform.workspace}"])
+  local.signatures_table])
 }
 
 // Base network Setup - VPC, Subnets, IGW, NatGW, ALB, Security Group and routing tables
 module "network" {
   source = "./modules/network"
+
+  global_namespace = var.namespace
 }
 
 // Microservices repositories
 module "ecr" {
-  source           = "./modules/ecr"
+  source = "./modules/ecr"
+
   ecr_repositories = local.microservices_ecr_repositories
 }
 
-// Buckets for FrontEnd - Web and App (iOS & Android)
-resource "aws_s3_bucket" "web_bucket" {
-  bucket = "${var.namespace}-${terraform.workspace}-${var.web_bucket_name}"
-  acl    = "public-read"
+module "s3" {
+  source = "./modules/s3"
 
-  website {
-    index_document = "index.html"
-    error_document = "error.html"
-  }
-}
-
-resource "aws_s3_bucket_policy" "web_bucket_policy" {
-  bucket = aws_s3_bucket.web_bucket.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Id      = "${var.namespace}-${terraform.workspace}-staticwebsitepolicy"
-    Statement = [
-      {
-        Sid       = "PublicReadForGetBucketObjects"
-        Effect    = "Allow"
-        Principal = "*"
-        Action    = "s3:GetObject"
-        Resource = [
-          "${aws_s3_bucket.web_bucket.arn}/*"
-        ]
-      },
-    ]
-  })
+  bucket_name      = "${var.namespace}-${terraform.workspace}-${var.web_bucket_name}"
+  bucket_policy_id = "${var.namespace}-${terraform.workspace}-staticwebsitepolicy"
 }
 
 // End Users Authentication - OAUTH2 OIDC - Authorization Code Grant
 module "cognito" {
-  source    = "./modules/cognito"
-  pool_name = "${var.namespace}_${var.pool_name}_${terraform.workspace}"
+  source = "./modules/cognito"
+
+  pool_name   = "${var.namespace}_${terraform.workspace}_${var.pool_name}"
+  domain_name = "${var.namespace}-${terraform.workspace}"
 }
 
 // Database Setup
 module "dynamodb" {
   //  TODO try to make it dynamic with only 1 resource inside!
   source = "./modules/dynamodb"
-  region = var.region
+
+  global_region                 = var.region
+  customers_table_name          = local.customers_table
+  accounts_table_name           = local.accounts_table
+  transactions_table_name       = local.transactions_table
+  favourite_accounts_table_name = local.favourite_accounts_table
+  signatures_table_name         = local.signatures_table
 }
 
 // Roles and Policies to Access AWS Resources
 module "iam" {
-  source            = "./modules/iam"
-  appsync_role_name = "${var.namespace}_${var.appsync_role_name}_${terraform.workspace}"
+  depends_on = [
+  module.dynamodb]
+  source = "./modules/iam"
+
+  appsync_role_name = "${var.namespace}_${terraform.workspace}_${var.appsync_role_name}"
   dynamodb_arns     = concat(module.dynamodb.dynamodb_arns, formatlist("%s/*", module.dynamodb.dynamodb_arns))
-  eks_role_name     = "${var.namespace}_${var.eks_role_name}_${terraform.workspace}"
+  eks_role_name     = "${var.namespace}_${terraform.workspace}_${var.eks_role_name}"
 }
 
 // ECS for Microservices
 module "ecs" {
-  source                       = "./modules/ecs"
-  ecs_execution_role_name      = "${var.namespace}_${var.ecs_execution_role_name}_${terraform.workspace}"
-  ecs_task_execution_role_name = "${var.namespace}_${var.ecs_task_execution_role_name}_${terraform.workspace}"
-  ecs_cluster_name             = "${var.namespace}_${var.ecs_cluster_name}_${terraform.workspace}"
+  depends_on = [
+  module.network]
+  source = "./modules/ecs"
+
+  ecs_execution_role_name      = "${var.namespace}_${terraform.workspace}_${var.ecs_execution_role_name}"
+  ecs_task_execution_role_name = "${var.namespace}_${terraform.workspace}_${var.ecs_task_execution_role_name}"
+  ecs_cluster_name             = "${var.namespace}_${terraform.workspace}_${var.ecs_cluster_name}"
   vpc_id                       = module.network.vpc_id
   elb_sg_id                    = module.network.elb_sg_id
-  container_name               = "container_accounts"
   private_subnets              = module.network.private_subnets
   alb_listener_arn             = module.network.alb_listener_arn
+  container_name               = "container_accounts"
 }
 
 // GraphQL API Setup
 module "appsync" {
-  depends_on = [module.dynamodb]
-  source           = "./modules/appsync"
-  api_name         = "${var.namespace}_${var.api_name}_${terraform.workspace}"
-  cognito_pool_id  = module.cognito.cognito_pool_id
-  table_names      = local.appsync_dynamodb_datasources
-  role_arn         = module.iam.appsync_role_arn
-  loadbalancer_url = module.network.elb_url
+  depends_on = [
+    module.dynamodb,
+    module.cognito,
+    module.iam,
+  module.network]
+  source = "./modules/appsync"
+
+  global_region                 = var.region
+  api_name                      = "${var.namespace}_${terraform.workspace}_${var.api_name}"
+  cognito_pool_id               = module.cognito.cognito_pool_id
+  role_arn                      = module.iam.appsync_role_arn
+  loadbalancer_url              = module.network.elb_url
+  table_names                   = local.appsync_dynamodb_datasources
+  customers_data_source         = local.customers_table
+  accounts_data_source          = local.accounts_table
+  transactions_data_source      = local.transactions_table
+  favourite_account_data_source = local.favourite_accounts_table
 }
 
 module "appsync_domain" {
+  depends_on = [
+  module.appsync]
   source = "matti/urlparse/external"
+
   url = module.appsync.appsync_graphql_url
 }
 
 module "cloudfront" {
   source = "./modules/cloudfront"
-  cert_name = "*.stoks.io"
-  hosted_zone_name = "stoks.io" // aka. Domain Name
-  appsync_domain_name = module.appsync_domain.host
-  static_bucket_domain = aws_s3_bucket.web_bucket.bucket_regional_domain_name // Using regional domain to avoid DNS propagation waiting and cloudfront redirecting to S3 URL
+
+  cert_name        = var.cert_name
+  hosted_zone_name = var.hosted_zone_name
+  // aka. Domain Name
+  appsync_domain_name  = module.appsync_domain.host
+  static_bucket_domain = module.s3.regional_domain_name
+  // Using regional domain to avoid DNS propagation waiting and cloudfront redirecting to S3 URL
 }

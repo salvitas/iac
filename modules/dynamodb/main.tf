@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "customers" {
-  name = "customers_${terraform.workspace}"
+  name = var.customers_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key = "id"
 
@@ -15,12 +15,12 @@ resource "aws_dynamodb_table" "customers" {
   //  }
 
   provisioner "local-exec" {
-    command = "dynamodump import-data --region ${var.region} --table=customers_${terraform.workspace} --file ${path.module}/data/customers_${terraform.workspace}.json"
+    command = "dynamodump import-data --region ${var.global_region} --table=${var.customers_table_name} --file ${path.module}/data/customers.json"
   }
 }
 
 resource "aws_dynamodb_table" "accounts" {
-  name = "accounts_${terraform.workspace}"
+  name = var.accounts_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key = "id"
 
@@ -45,12 +45,12 @@ resource "aws_dynamodb_table" "accounts" {
   }
 
   provisioner "local-exec" {
-    command = "dynamodump import-data --region ${var.region} --table=accounts_${terraform.workspace} --file ${path.module}/data/accounts_${terraform.workspace}.json"
+    command = "dynamodump import-data --region ${var.global_region} --table=${var.accounts_table_name} --file ${path.module}/data/accounts.json"
   }
 }
 
 resource "aws_dynamodb_table" "transactions" {
-  name = "transactions_${terraform.workspace}"
+  name = var.transactions_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key = "id"
 
@@ -75,12 +75,12 @@ resource "aws_dynamodb_table" "transactions" {
   }
 
   provisioner "local-exec" {
-    command = "dynamodump import-data --region ${var.region} --table=transactions_${terraform.workspace} --file ${path.module}/data/transactions_${terraform.workspace}.json"
+    command = "dynamodump import-data --region ${var.global_region} --table=${var.transactions_table_name} --file ${path.module}/data/transactions.json"
   }
 }
 
 resource "aws_dynamodb_table" "favourite_accounts" {
-  name = "favourite_accounts_${terraform.workspace}"
+  name = var.favourite_accounts_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key = "id"
 
@@ -105,12 +105,12 @@ resource "aws_dynamodb_table" "favourite_accounts" {
   }
 
   provisioner "local-exec" {
-    command = "dynamodump import-data --region ${var.region} --table=favourite_accounts_${terraform.workspace} --file ${path.module}/data/favourite_accounts_${terraform.workspace}.json"
+    command = "dynamodump import-data --region ${var.global_region} --table=${var.favourite_accounts_table_name} --file ${path.module}/data/favourite_accounts.json"
   }
 }
 
 resource "aws_dynamodb_table" "signatures" {
-  name = "signatures_${terraform.workspace}"
+  name = var.signatures_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key = "id"
 
@@ -130,6 +130,6 @@ resource "aws_dynamodb_table" "signatures" {
   }
 
   provisioner "local-exec" {
-    command = "dynamodump import-data --region ${var.region} --table=signatures_${terraform.workspace} --file ${path.module}/data/signatures_${terraform.workspace}.json"
+    command = "dynamodump import-data --region ${var.global_region} --table=${var.signatures_table_name} --file ${path.module}/data/signatures.json"
   }
 }

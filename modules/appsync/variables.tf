@@ -1,5 +1,4 @@
-variable "region" {
-  default = "ap-southeast-1"
+variable "global_region" {
   type    = string
   description = "The AWS region where resources will be created"
 }
@@ -14,11 +13,6 @@ variable "cognito_pool_id" {
   description = "The Cognito Pool Id"
 }
 
-variable "table_names" {
-  type    = list(string)
-  description = "The DynamoDB table names"
-}
-
 variable "role_arn" {
   type    = string
   description = "The AppSync Role ARN"
@@ -27,4 +21,29 @@ variable "role_arn" {
 variable "loadbalancer_url" {
   type    = string
   description = "The HTTP Resource Load Balancer URL"
+}
+
+variable "table_names" {
+  type    = list(string)
+  description = "The DynamoDB table names"
+}
+
+variable "customers_data_source" {
+  type    = string
+  description = "The data source name"
+}
+
+variable "accounts_data_source" {
+  type    = string
+  description = "The data source name"
+}
+
+variable "transactions_data_source" {
+  type    = string
+  description = "The data source name"
+}
+
+variable "favourite_account_data_source" {
+  type    = string
+  description = "The data source name"
 }

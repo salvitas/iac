@@ -117,7 +117,12 @@ resource "aws_ecs_task_definition" "accounts_service_task_definition" {
   execution_role_arn = aws_iam_role.ecs_execution_role.arn
   task_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = templatefile("${path.module}/data/container-definition.tpl", { container_name = "container_accounts", env = "${terraform.workspace}" })
+  container_definitions = templatefile(
+    "${path.module}/data/container-definition.tpl",
+    {
+      container_name = var.container_name,
+      env = terraform.workspace
+    })
 }
 
 resource "aws_lb_target_group" "accounts_tg" {
@@ -180,3 +185,5 @@ resource "aws_ecs_service" "accounts_service" {
   }
 
 }
+
+// TODO REfactor all this module into variables and dynamic templates for microservices
