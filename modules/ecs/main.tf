@@ -122,7 +122,9 @@ resource "aws_ecs_task_definition" "accounts_service_task_definition" {
     "${path.module}/data/container-definition.tpl",
     {
       container_name = var.container_name,
-      env = terraform.workspace
+      env = terraform.workspace,
+      table_name = "${var.global_namespace}_${terraform.workspace}_accounts",
+      log_group = aws_cloudwatch_log_group.ecs.name
     })
 }
 

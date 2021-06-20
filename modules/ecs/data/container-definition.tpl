@@ -11,17 +11,17 @@
     "environment": [
       {
         "name": "env",
-        "value": "dev"
+        "value": "${env}"
       },
       {
         "name": "amazon.dynamodb.accounts-table",
-        "value": "accounts_dev"
+        "value": "${table_name}"
       }
     ],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/ecs/accounts-service-${env}",
+        "awslogs-group": "${log_group}",
         "awslogs-region": "ap-southeast-1",
         "awslogs-stream-prefix": "accounts-service"
       }
