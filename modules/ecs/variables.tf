@@ -1,11 +1,6 @@
-variable "ecs_execution_role_name" {
+variable "global_namespace" {
   type    = string
-  description = "The ECS Execution Role Name for Microservices to run"
-}
-
-variable "ecs_task_execution_role_name" {
-  type    = string
-  description = "The ECS Task Execution Role Name for Microservices to run"
+  description = "The arn resource policy prefix name"
 }
 
 variable "ecs_cluster_name" {
@@ -28,12 +23,13 @@ variable "private_subnets" {
   description = "The Array of private subnets to associate to ecs service"
 }
 
+variable "alb_listener_arn" {
+  type = string
+  description = "The ALB Listener ARN"
+}
+
 variable "container_name" {
   type = string
   description = "The container name"
 }
 
-variable "alb_listener_arn" {
-  type = string
-  description = "The ALB Listener ARN"
-}

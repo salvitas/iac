@@ -42,18 +42,3 @@ variable "eks_role_name" {
   type        = string
   description = "The EKS Role Name"
 }
-
-variable "ecs_execution_role_name" {
-  type        = string
-  description = "The ECS Execution Role Name"
-}
-
-variable "ecs_task_execution_role_name" {
-  type        = string
-  description = "The ECS Task Execution Role Name"
-}
-
-variable "ecs_cluster_name" {
-  type        = string
-  description = "The ECS Cluster Name for Microservices to run"
-}

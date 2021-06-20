@@ -101,9 +101,8 @@ module "ecs" {
   module.network]
   source = "./modules/ecs"
 
-  ecs_execution_role_name      = "${var.namespace}_${terraform.workspace}_${var.ecs_execution_role_name}"
-  ecs_task_execution_role_name = "${var.namespace}_${terraform.workspace}_${var.ecs_task_execution_role_name}"
-  ecs_cluster_name             = "${var.namespace}_${terraform.workspace}_${var.ecs_cluster_name}"
+  global_namespace             = var.namespace
+  ecs_cluster_name             = "${var.namespace}_${terraform.workspace}_microservices_cluster"
   vpc_id                       = module.network.vpc_id
   elb_sg_id                    = module.network.elb_sg_id
   private_subnets              = module.network.private_subnets
@@ -144,9 +143,9 @@ module "cloudfront" {
   source = "./modules/cloudfront"
 
   cert_name        = var.cert_name
-  hosted_zone_name = var.hosted_zone_name
   // aka. Domain Name
+  hosted_zone_name = var.hosted_zone_name
   appsync_domain_name  = module.appsync_domain.host
-  static_bucket_domain = module.s3.regional_domain_name
   // Using regional domain to avoid DNS propagation waiting and cloudfront redirecting to S3 URL
+  static_bucket_domain = module.s3.regional_domain_name
 }

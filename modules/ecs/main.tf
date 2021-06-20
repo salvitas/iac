@@ -1,6 +1,6 @@
 // ECS Roles and Policies
 resource "aws_iam_role" "ecs_execution_role" {
-  name               = var.ecs_execution_role_name
+  name               = "${var.global_namespace}_${terraform.workspace}_microservices_execution_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -20,7 +20,7 @@ resource "aws_iam_role_policy_attachment" "AmazonECSTaskExecutionRolePolicy" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = var.ecs_task_execution_role_name
+  name               = "${var.global_namespace}_${terraform.workspace}_microservices_task_execution_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -46,7 +46,7 @@ resource "aws_iam_role_policy" "ecs_to_dynamodb_policy" {
         Action = [
           "dynamodb:*"
         ]
-        Resource = "arn:aws:dynamodb:*:*:table/*_${terraform.workspace}"
+        Resource = "arn:aws:dynamodb:*:*:table/${var.global_namespace}_${terraform.workspace}*"
       },
     ]
   })
@@ -63,12 +63,13 @@ resource "aws_iam_role_policy" "ecs_to_sqs_policy" {
         Action = [
           "sqs:*"
         ]
-        Resource = "arn:aws:sqs:*:*:*_${terraform.workspace}"
+        Resource = "arn:aws:sqs:*:*:${var.global_namespace}_${terraform.workspace}*"
       },
     ]
   })
 }
 
+// ECS Cluster
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.ecs_cluster_name
 
@@ -79,7 +80,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 resource "aws_security_group" "ecs_sg" {
-  name = "ecs_security_group_${terraform.workspace}"
+  name = "${var.global_namespace}_${terraform.workspace}_ecs_security_group"
   description = "ECS Security Group to allow access from ALB SG"
   vpc_id = var.vpc_id
   ingress {
@@ -98,18 +99,18 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   tags = {
-    Name = "ecs_security_group_${terraform.workspace}"
+    Name = "${var.global_namespace}_${terraform.workspace}_ecs_security_group"
   }
 }
 
 // Microservice specific config - testing
 resource "aws_cloudwatch_log_group" "ecs" {
-  name = "/ecs/accounts-service-${terraform.workspace}"
+  name = "/ecs/${var.global_namespace}-${terraform.workspace}-accounts-service"
   retention_in_days = 7
 }
 
 resource "aws_ecs_task_definition" "accounts_service_task_definition" {
-  family = "accounts_task_definition_${terraform.workspace}"
+  family = "${var.global_namespace}_${terraform.workspace}_accounts_task_definition"
   requires_compatibilities = ["FARGATE"]
   memory = "512"
   cpu = "256"
@@ -126,7 +127,7 @@ resource "aws_ecs_task_definition" "accounts_service_task_definition" {
 }
 
 resource "aws_lb_target_group" "accounts_tg" {
-  name = "accounts-tg-${terraform.workspace}"
+  name = "${var.global_namespace}-${terraform.workspace}-accounts-tg"
   vpc_id = var.vpc_id
   target_type = "ip"
   port = 80
@@ -163,7 +164,7 @@ resource "aws_lb_listener_rule" "header_listener" {
 }
 
 resource "aws_ecs_service" "accounts_service" {
-  name            = "accounts_service_${terraform.workspace}"
+  name            = "${var.global_namespace}_${terraform.workspace}_accounts_service"
   cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.accounts_service_task_definition.arn
   desired_count   = 1
@@ -186,4 +187,4 @@ resource "aws_ecs_service" "accounts_service" {
 
 }
 
-// TODO REfactor all this module into variables and dynamic templates for microservices
+// TODO Refactor all this module into variables and dynamic templates for microservices
