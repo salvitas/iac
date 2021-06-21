@@ -1,3 +1,62 @@
+// AppSync Roles and Policies
+resource "aws_iam_role" "appsync_role" {
+  name               = var.appsync_role_name
+  path               = "/"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "appsync.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "appsync_to_cloudwatch_policy" {
+  name = "AWSAppSyncPushToCloudWatchLogsPolicy"
+  role = aws_iam_role.appsync_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = [
+          "*"
+        ]
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "appsync_to_dynamodb_policy" {
+  name = "GraphQLApiDynamoDBAccessPolicy"
+  role = aws_iam_role.appsync_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action = [
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:GetItem"
+        ]
+        Resource = var.dynamodb_arns
+      },
+    ]
+  })
+}
+
+// AppSync API
 resource "aws_appsync_graphql_api" "appsync" {
   authentication_type = "AMAZON_COGNITO_USER_POOLS"
   name = var.api_name
@@ -10,7 +69,7 @@ resource "aws_appsync_graphql_api" "appsync" {
 
   schema = file("${path.module}/data/schema.graphql")
   log_config {
-    cloudwatch_logs_role_arn = var.role_arn
+    cloudwatch_logs_role_arn = aws_iam_role.appsync_role.arn
     field_log_level = "NONE"
   }
 }
@@ -19,7 +78,7 @@ resource "aws_appsync_datasource" "appsync_dynamodb_ds" {
   for_each = toset(var.table_names)
   api_id = aws_appsync_graphql_api.appsync.id
   name = each.key
-  service_role_arn = var.role_arn
+  service_role_arn = aws_iam_role.appsync_role.arn
   type = "AMAZON_DYNAMODB"
 
   dynamodb_config {

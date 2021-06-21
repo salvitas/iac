@@ -123,6 +123,8 @@ resource "aws_ecs_task_definition" "accounts_service_task_definition" {
     {
       container_name = var.container_name,
       env = terraform.workspace,
+      cognito_pool_id = var.cognito_pool_id
+      cognito_audience = var.cognito_audience
       table_name = "${var.global_namespace}_${terraform.workspace}_accounts",
       log_group = aws_cloudwatch_log_group.ecs.name
     })

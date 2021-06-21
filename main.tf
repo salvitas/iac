@@ -84,16 +84,14 @@ module "dynamodb" {
   signatures_table_name         = local.signatures_table
 }
 
-// Roles and Policies to Access AWS Resources
-module "iam" {
-  depends_on = [
-  module.dynamodb]
-  source = "./modules/iam"
-
-  appsync_role_name = "${var.namespace}_${terraform.workspace}_${var.appsync_role_name}"
-  dynamodb_arns     = concat(module.dynamodb.dynamodb_arns, formatlist("%s/*", module.dynamodb.dynamodb_arns))
-  eks_role_name     = "${var.namespace}_${terraform.workspace}_${var.eks_role_name}"
-}
+//// Generic Roles and Policies to Access AWS Resources - specific one are in the service modules themselves
+//module "iam" {
+//  depends_on = [
+//  module.dynamodb]
+//  source = "./modules/iam"
+//
+//  eks_role_name     = "${var.namespace}_${terraform.workspace}_eks_role"
+//}
 
 // ECS for Microservices
 module "ecs" {
@@ -101,13 +99,15 @@ module "ecs" {
   module.network]
   source = "./modules/ecs"
 
-  global_namespace             = var.namespace
-  ecs_cluster_name             = "${var.namespace}_${terraform.workspace}_microservices_cluster"
-  vpc_id                       = module.network.vpc_id
-  elb_sg_id                    = module.network.elb_sg_id
-  private_subnets              = module.network.private_subnets
-  alb_listener_arn             = module.network.alb_listener_arn
-  container_name               = "container_accounts"
+  global_namespace = var.namespace
+  ecs_cluster_name = "${var.namespace}_${terraform.workspace}_microservices_cluster"
+  vpc_id           = module.network.vpc_id
+  elb_sg_id        = module.network.elb_sg_id
+  private_subnets  = module.network.private_subnets
+  alb_listener_arn = module.network.alb_listener_arn
+  container_name   = "container_accounts"
+  cognito_pool_id  = module.cognito.cognito_pool_id
+  cognito_audience = module.cognito.cognito_pool_client_id
 }
 
 // GraphQL API Setup
@@ -115,16 +115,17 @@ module "appsync" {
   depends_on = [
     module.dynamodb,
     module.cognito,
-    module.iam,
   module.network]
   source = "./modules/appsync"
 
-  global_region                 = var.region
-  api_name                      = "${var.namespace}_${terraform.workspace}_${var.api_name}"
-  cognito_pool_id               = module.cognito.cognito_pool_id
-  role_arn                      = module.iam.appsync_role_arn
-  loadbalancer_url              = module.network.elb_url
-  table_names                   = local.appsync_dynamodb_datasources
+  global_region     = var.region
+  api_name          = "${var.namespace}_${terraform.workspace}_${var.api_name}"
+  cognito_pool_id   = module.cognito.cognito_pool_id
+  appsync_role_name = "${var.namespace}_${terraform.workspace}_appsync_role"
+  dynamodb_arns     = concat(module.dynamodb.dynamodb_arns, formatlist("%s/*", module.dynamodb.dynamodb_arns))
+  loadbalancer_url  = module.network.elb_url
+  table_names       = local.appsync_dynamodb_datasources
+  //  Tables for AppSync Resolvers
   customers_data_source         = local.customers_table
   accounts_data_source          = local.accounts_table
   transactions_data_source      = local.transactions_table
@@ -142,10 +143,10 @@ module "appsync_domain" {
 module "cloudfront" {
   source = "./modules/cloudfront"
 
-  cert_name        = var.cert_name
+  cert_name = var.cert_name
   // aka. Domain Name
-  hosted_zone_name = var.hosted_zone_name
-  appsync_domain_name  = module.appsync_domain.host
+  hosted_zone_name    = var.hosted_zone_name
+  appsync_domain_name = module.appsync_domain.host
   // Using regional domain to avoid DNS propagation waiting and cloudfront redirecting to S3 URL
   static_bucket_domain = module.s3.regional_domain_name
 }

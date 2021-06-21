@@ -14,6 +14,14 @@
         "value": "${env}"
       },
       {
+        "name": "securityProvider.userPoolId",
+        "value": "${cognito_pool_id}"
+      },
+      {
+        "name": "securityProvider.audience",
+        "value": "${cognito_audience}"
+      },
+      {
         "name": "amazon.dynamodb.accounts-table",
         "value": "${table_name}"
       }

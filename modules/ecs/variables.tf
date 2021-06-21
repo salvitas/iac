@@ -33,3 +33,12 @@ variable "container_name" {
   description = "The container name"
 }
 
+variable "cognito_pool_id" {
+  type = string
+  description = "The cognito pool id needed for microservice JWT token verification"
+}
+
+variable "cognito_audience" {
+  type = string
+  description = "The cognito client id needed for microservice JWT token verification"
+}

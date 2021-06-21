@@ -13,9 +13,14 @@ variable "cognito_pool_id" {
   description = "The Cognito Pool Id"
 }
 
-variable "role_arn" {
+variable "appsync_role_name" {
   type    = string
-  description = "The AppSync Role ARN"
+  description = "The AppSync Role Name"
+}
+
+variable "dynamodb_arns" {
+  type = list(string)
+  description = "The list of arns for the appsync - dynamodb policy"
 }
 
 variable "loadbalancer_url" {

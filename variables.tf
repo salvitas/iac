@@ -32,13 +32,3 @@ variable "api_name" {
   type        = string
   description = "The AppSync api name"
 }
-
-variable "appsync_role_name" {
-  type        = string
-  description = "The AppSync Role Name"
-}
-
-variable "eks_role_name" {
-  type        = string
-  description = "The EKS Role Name"
-}
