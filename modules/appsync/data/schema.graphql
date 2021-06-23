@@ -194,7 +194,7 @@ type Mutation @aws_api_key @aws_cognito_user_pools {
 }
 
 type Query @aws_api_key @aws_cognito_user_pools {
-  getCustomer(id: String!): Customer
+  getCustomer: Customer
   getTransactionsByAccountIdOrderedByOperationDate(accountId: String!, limit: Int, nextToken: String): TransactionsConnection
   getTransaction(id: String!): Transaction
   getFavouriteAccountsByCustomerIdOrderedByAlias(customerId: String!, limit: Int, nextToken: String): FavouriteAccountConnection
