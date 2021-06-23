@@ -42,6 +42,7 @@ locals {
   local.signatures_table])
 }
 
+
 // Base network Setup - VPC, Subnets, IGW, NatGW, ALB, Security Group and routing tables
 module "network" {
   source = "./modules/network"
@@ -49,26 +50,11 @@ module "network" {
   global_namespace = var.namespace
 }
 
-// Microservices repositories
-module "ecr" {
-  source = "./modules/ecr"
-
-  ecr_repositories = local.microservices_ecr_repositories
-}
-
 module "s3" {
   source = "./modules/s3"
 
   bucket_name      = "${var.namespace}-${terraform.workspace}-${var.web_bucket_name}"
   bucket_policy_id = "${var.namespace}-${terraform.workspace}-staticwebsitepolicy"
-}
-
-// End Users Authentication - OAUTH2 OIDC - Authorization Code Grant
-module "cognito" {
-  source = "./modules/cognito"
-
-  pool_name   = "${var.namespace}_${terraform.workspace}_${var.pool_name}"
-  domain_name = "${var.namespace}-${terraform.workspace}"
 }
 
 // Database Setup
@@ -84,6 +70,19 @@ module "dynamodb" {
   signatures_table_name         = local.signatures_table
 }
 
+module "serverless" {
+  source = "./modules/serverless_functions"
+  dynamodb_arns     = concat(module.dynamodb.dynamodb_arns, formatlist("%s/*", module.dynamodb.dynamodb_arns))
+}
+
+// End Users Authentication - OAUTH2 OIDC - Authorization Code Grant
+module "cognito" {
+  source = "./modules/cognito"
+
+  pool_name   = "${var.namespace}_${terraform.workspace}_${var.pool_name}"
+  domain_name = "${var.namespace}-${terraform.workspace}"
+  post_auth_lambda = module.serverless.sync_accounts_arn
+}
 //// Generic Roles and Policies to Access AWS Resources - specific one are in the service modules themselves
 //module "iam" {
 //  depends_on = [
@@ -92,6 +91,13 @@ module "dynamodb" {
 //
 //  eks_role_name     = "${var.namespace}_${terraform.workspace}_eks_role"
 //}
+
+// Microservices repositories
+module "ecr" {
+  source = "./modules/ecr"
+
+  ecr_repositories = local.microservices_ecr_repositories
+}
 
 // ECS for Microservices
 module "ecs" {

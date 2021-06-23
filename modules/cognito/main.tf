@@ -61,6 +61,9 @@ resource "aws_cognito_user_pool" "iam" {
       max_length = 255
     }
   }
+  lambda_config {
+    post_authentication = var.post_auth_lambda
+  }
 }
 resource "aws_cognito_user_pool_client" "client" {
   name = "app-client"
