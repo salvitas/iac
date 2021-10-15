@@ -24,7 +24,7 @@ exports.handler = async (event, context) => {
         port: 443,
         path: '/api/'+serviceName,
         headers: {
-            'Authorization': 'Basic c3J2czpva0M0UXJaOXNeamo=',
+            'Authorization': 'Basic xxx',
             'Accept': 'application/vnd.mambu.v2+json',
             'Content-Type': 'application/json'
         }
